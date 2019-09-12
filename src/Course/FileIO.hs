@@ -85,46 +85,72 @@ printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile path cs = putStrLn $ path ++ " " ++ cs
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles files =
+  -- void $ sequence $ (\(name, contents) -> printFile name contents) <$> files
+  void $ sequence $ (uncurry printFile) <$> files
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile filename =
+    -- (\c -> (filename, c)) <$> readFile filename
+    -- infix notation and eta reduce
+    -- ((,) filename) <$> readFile filename
+    lift2 (<$>) (,) readFile filename
+
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles l = sequence $ getFile <$> l
+
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
 run ::
   FilePath
   -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run filename =
+    readFile filename >>= getFiles . lines >>= printFiles
+    -- do
+        -- c <- readFile filename
+        -- let blah = lines c :: List FilePath
+        -- let blah2 = getFiles blah :: IO (List (FilePath, Chars))
+        -- v <- blah2
+        -- let blah3 = printFiles v
+        -- blah3
+    -- do
+        -- c <- readFile filename
+        -- v <- getFiles (lines c)
+        -- printFiles v
+
 
 -- /Tip:/ use @getArgs@ and @run@
 main ::
   IO ()
 main =
-  error "todo: Course.FileIO#main"
+    -- STEP 1
+    -- do
+    --     a <- getArgs
+    --     undefined
+    -- STEP 2
+    do
+        a <- getArgs
+        case a of
+            Nil -> putStrLn "command line args please"
+            r :. _ -> run r
+
 
 ----
 
