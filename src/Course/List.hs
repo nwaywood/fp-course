@@ -278,8 +278,9 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find p as = case filter p as of 
+  (h :. _) -> Full h
+  Nil -> Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -297,8 +298,9 @@ find =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 (_ :. _ :. _ :. _ :. _) = True
+lengthGT4 _ = False
+  
 
 -- | Reverse a list.
 --
@@ -314,8 +316,10 @@ lengthGT4 =
 reverse ::
   List a
   -> List a
-reverse =
-  error "todo: Course.List#reverse"
+-- reverse = foldRight (\val acc -> acc ++ (val :. Nil)) Nil
+-- reverse = foldLeft (\acc val -> (val :. acc) Nil
+-- reverse = foldLeft (flip ((++) . (:. Nil))) Nil
+reverse = foldLeft (flip (:.)) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -343,8 +347,7 @@ produce f x = x :. produce f (f x)
 notReverse ::
   List a
   -> List a
-notReverse =
-  error "todo: Is it even possible?"
+notReverse = reverse
 
 ---- End of list exercises
 
