@@ -63,18 +63,21 @@ instance Applicative ExactlyOne where
 -- >>> (+1) :. (*2) :. Nil <*> 1 :. 2 :. 3 :. Nil
 -- [2,3,4,2,4,6]
 instance Applicative List where
-  pure ::
-    a
-    -> List a
-  pure =
-    error "todo: Course.Applicative pure#instance List"
+  pure :: a -> List a
+  pure a = a :. Nil 
   (<*>) ::
     List (a -> b)
     -> List a
     -> List b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance List"
-
+  -- (<*>) fabs as = foldRight (\f acc -> (f <$> as) ++ acc) Nil fabs
+  -- (<*>) fabs as = foldRight (\f acc -> (++) (f <$> as) acc) Nil fabs
+  -- (<*>) fabs as = foldRight (\f -> (++) (f <$> as)) Nil fabs
+  -- (<*>) fabs as = foldRight (\f -> (++) ((<$>) f as)) Nil fabs
+  -- (<*>) fabs as = foldRight (\f -> (++) (flip (<$>) as f)) Nil fabs
+  -- (<*>) fabs as = foldRight ((++) . (flip (<$>) as)) Nil fabs
+  (<*>) fabs as = foldRight ((++) . (<$> as)) Nil fabs
+  -- (<*>) fabs as = foldRight (\a -> (++) ((<$> as) a)) Nil fabs
+  
 -- | Insert into an Optional.
 --
 -- prop> \x -> pure x == Full x
@@ -91,14 +94,17 @@ instance Applicative Optional where
   pure ::
     a
     -> Optional a
-  pure =
-    error "todo: Course.Applicative pure#instance Optional"
+  pure a = Full a
   (<*>) ::
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance Optional"
+  (<*>) _ Empty = Empty
+  (<*>) Empty _ = Empty
+  (<*>) (Full fab) (Full a) = Full (fab a)
+
+  (<*>) (Full fab) opa = fab <$> opa
+  (<*>) Empty _ = Empty
 
 -- | Insert into a constant function.
 --
