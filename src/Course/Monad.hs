@@ -36,8 +36,8 @@ instance Monad ExactlyOne where
     (a -> ExactlyOne b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ExactlyOne"
+  (=<<) f a = runExactlyOne (f <$> a)
+    
 
 -- | Binds a function on a List.
 --
@@ -48,8 +48,8 @@ instance Monad List where
     (a -> List b)
     -> List a
     -> List b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance List"
+  (=<<) f  = flatten . (<$>) f
+    
 
 -- | Binds a function on an Optional.
 --
