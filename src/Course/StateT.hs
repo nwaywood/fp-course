@@ -16,6 +16,7 @@ import Course.Monad
 import Course.State
 import qualified Data.Set as S
 import qualified Prelude as P
+import qualified Data.Bifunctor as BF
 
 -- $setup
 -- >>> import Test.QuickCheck
@@ -39,8 +40,9 @@ instance Functor k => Functor (StateT s k) where
     (a -> b)
     -> StateT s k a
     -> StateT s k b
-  (<$>) =
-    error "todo: Course.StateT (<$>)#instance (StateT s k)"
+  -- (<$>) f (StateT l) = StateT (\s -> let x = l s in BF.first f <$> x)
+  -- (<$>) f (StateT l) = StateT (\s -> (<$>) BF.first f (l s))
+  (<$>) f (StateT l) = StateT ((<$>) (BF.first f) . l)  
 
 -- | Implement the `Applicative` instance for @StateT s k@ given a @Monad k@.
 --
